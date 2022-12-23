@@ -6,6 +6,11 @@ const app = express();
 // Connecting to the database
 connectDB();
 
+// Init Middleware
+app.use(express.json({ extended: false }));
+// This will initialize the Body parser
+// We can use req.body and extract data now.
+
 app.get("/", (req, res) => res.send("API Running"));
 
 // Define Routes
