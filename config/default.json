@@ -1,3 +1,4 @@
 {
-  "mongoURI": "mongodb+srv://avishka_indula:p7iGGaREtxbhN3t3@cluster0.oqbbqn2.mongodb.net/?retryWrites=true&w=majority"
+  "mongoURI": "mongodb+srv://avishka_indula:p7iGGaREtxbhN3t3@cluster0.oqbbqn2.mongodb.net/?retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken"
 }
