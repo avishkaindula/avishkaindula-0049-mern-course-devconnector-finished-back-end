@@ -1,6 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { check, validationResult } = require("express-validator/check");
+const gravatar = require("gravatar");
+const bcrypt = require("bcryptjs");
+
+// const { check, validationResult } = require("express-validator/check");
+// This throws a warning telling
+// requires to express-validator/check are deprecated.You should just use require("express-validator") instead.
+// So I need to change the code
+const { check, validationResult } = require("express-validator");
+
+const User = require("../../models/User");
 
 // @route   GET api/users   => This is the request type and the endpoint of this api
 // @desc    Test route      => This is the description of what the router does
@@ -22,13 +31,56 @@ router.post(
       "Please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    // In order to use this, we need to add app.use(express.json({ extended: false })); to server.js
-    res.send("User route");
+
+    const { name, email, password } = req.body;
+
+    try {
+      // console.log(req.body);
+      // In order to use this, we need to add app.use(express.json({ extended: false })); to server.js
+
+      // See if user exists
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return res.status(400).json({ errors: [{ msg: "User already exists" }] });
+      }
+
+      // Get users gravatar
+      const avatar = gravatar.url(email, {
+        s: "200",
+        r: "pg",
+        d: "mm",
+      });
+
+      user = new User({
+        name,
+        email,
+        avatar,
+        password,
+      });
+      // This will cerate a instance of a user.
+      // This doesn't save the user, it just creates a new instance
+      // We need to call User.save() to save a user.
+
+      // Encrypt password
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      // Return jsonwebtoken
+      // In the front-end when the user registers we wanna get him logged in right away
+      // so in order to get logged in we need to have that token
+      res.send("User registered");
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server error");
+    }
   }
 );
 
