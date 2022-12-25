@@ -169,4 +169,32 @@ router.get("/user/:user_id", async (req, res) => {
 // Now when we send a get request like this, it will return the profile data
 // of the user with the id 63a5b686e910c0a6a4918f98
 
+// @route   DELETE api/profile
+// @desc    Delete profile, user & posts
+// @access  Private
+// This delete request will delete user, profile and posts all at the same time.
+router.delete("/", auth, async (req, res) => {
+  // This will send a delete request to http://localhost:5000/api/profile/F
+  try {
+    // @todo - remove users posts
+
+    // Remove profile
+    // This will delete a profile from the profiles collection
+    // We need to access the Profile.js model and remove it.
+    // That's why we've used "Profile." in here
+    await Profile.findOneAndRemove({ user: req.user.id });
+
+    // Remove user
+    // This will delete a user from the profiles collection
+    // We need to access the User.js model and remove it.
+    // That's why we've used "User." in here
+    await User.findOneAndRemove({ _id: req.user.id });
+
+    res.json({ msg: "User deleted" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 module.exports = router;
