@@ -124,11 +124,49 @@ router.post(
       await profile.save();
       // This will save the user profile data to the database.
       res.json(profile);
-    } catch {
+    } catch (err) {
       console.error(err.message);
       res.status(500).send("Server Error");
     }
   }
 );
+
+// @route   GET api/profile
+// @desc    Get all profiles
+// @access  Public
+router.get("/", async (req, res) => {
+  try {
+    const profiles = await Profile.find().populate("user", ["name", "avatar"]);
+    res.json(profiles);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route   GET api/profile/user/:user_id
+// @desc    Get profile by user ID
+// @access  Public
+router.get("/user/:user_id", async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.params.user_id,
+    }).populate("user", ["name", "avatar"]);
+
+    if (!profile) return res.status(400).json({ msg: "Profile not found" });
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ msg: "Profile not found" });
+    }
+    // This if statement will check for invalid user ids on the post request url
+    // and throw this error.
+    res.status(500).send("Server Error");
+  }
+});
+// http://localhost:5000/api/profile/user/63a5b686e910c0a6a4918f98
+// Now when we send a get request like this, it will return the profile data
+// of the user with the id 63a5b686e910c0a6a4918f98
 
 module.exports = router;
