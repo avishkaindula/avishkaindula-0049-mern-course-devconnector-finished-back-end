@@ -1,4 +1,6 @@
 {
   "mongoURI": "mongodb+srv://avishka_indula:p7iGGaREtxbhN3t3@cluster0.oqbbqn2.mongodb.net/?retryWrites=true&w=majority",
-  "jwtSecret": "mysecrettoken"
+  "jwtSecret": "mysecrettoken",
+  "githubClientId": "f9990b37bffe7fc30fd6",
+  "githubSecret": "3949fd6325813e4b05e7ae3dccb1eb28c7d5dc30"
 }
